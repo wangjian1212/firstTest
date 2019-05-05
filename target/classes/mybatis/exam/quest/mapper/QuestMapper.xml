@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sinosoft.exam.quest.mapper.QuestMapper">
+
+  <resultMap type="com.sinosoft.exam.quest.model.Quest" id="questMap">
+    <id column="id" property="id"/>
+    <result column="TITLE" property="title" jdbcType="VARCHAR"/>
+    <result column="CONTENT" property="content" jdbcType="VARCHAR"/>
+    <result column="CRE_USER_ID" property="creUserId" jdbcType="VARCHAR"/>
+    <result column="CRE_USER_NAME" property="creUserName" jdbcType="VARCHAR"/>
+    <result column="CRE_TIME" property="creTime" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <sql id="field_all">
+    id, title, content, cre_user_id, cre_user_name, cre_time
+  </sql>
+  
+  <select id="getQuestById" parameterType="java.lang.String" resultMap="questMap">
+    select <include refid="field_all"/>
+      from quest  where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getQuestsByUserId" parameterType="java.lang.String" resultMap="questMap">
+    select <include refid="field_all"/>
+      from quest  where 1=1
+    <if test="creUserId!=null and creUserId!=''">
+      and cre_user_id = #{creUserId}
+    </if>
+    order by cre_time desc
+  </select>
+
+  <insert id="saveQuest" parameterType="com.sinosoft.exam.quest.model.Quest">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
+      select UUID()
+    </selectKey>
+    insert into quest(id, title, content, cre_user_id, cre_user_name, cre_time)
+    values(
+    #{id,jdbcType=VARCHAR},
+    #{title,jdbcType=VARCHAR},
+    #{content,jdbcType=VARCHAR},
+    #{creUserId,jdbcType=VARCHAR},
+    #{creUserName,jdbcType=VARCHAR},
+    #{creTime,jdbcType=VARCHAR}
+    )
+  </insert>
+
+
+</mapper>
